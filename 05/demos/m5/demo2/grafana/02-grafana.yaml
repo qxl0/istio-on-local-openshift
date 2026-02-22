@@ -139,11 +139,6 @@ spec:
       
       serviceAccountName: grafana
       automountServiceAccountToken: true
-      securityContext:
-        fsGroup: 472
-        runAsGroup: 472
-        runAsNonRoot: true
-        runAsUser: 472
       enableServiceLinks: true
       containers:
         - name: grafana

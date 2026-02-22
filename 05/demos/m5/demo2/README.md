@@ -28,7 +28,7 @@ Deploy Grafana and VirtualServices for the web UIs:
 kubectl apply -f demo2/grafana/
 ```
 
-> Browse to http://prometheus.local
+> OpenShift Local: http://prometheus-istio-gateway.apps-crc.testing
 
 - Select `istio_requests_total`
 - Switch to _Graph_
@@ -36,22 +36,29 @@ kubectl apply -f demo2/grafana/
 
 ## Generate some load
 
-Send 100 requests per second for next 30 minutes:
+Send 100 requests per second for next 30 minutes using Fortio inside the cluster:
 
-_Use your own host's IP address_
+Create fortio pod:
+
+```powershell
+oc apply -f .\fortio-pod.yaml
+oc -n bookinfo wait pod/fortio --for=condition=Ready --timeout=120s
+oc -n bookinfo get pod fortio -o wide
+```
+
+Run the load test:
 
 ```
-docker container run -it `
-  --add-host "bookinfo.local:192.168.2.120" `
-  fortio/fortio `
-  load -c 32 -qps 100 -t 30m http://bookinfo.local/productpage
+oc -n bookinfo exec -it pod/fortio -- \
+  fortio load -c 32 -qps 100 -t 30m \
+  http://productpage:9080/productpage
 ```
 
 - Back to _Graph_ view in Prometheus
 
 ## Grafana UI
 
-> Browse to http://grafana.local
+> OpenShift Local: http://grafana-istio-gateway.apps-crc.testing
 
  - _Istio Mesh Dashboard_ - overview
  - _Istio Worklod Dashboard_ - drill down into component 
@@ -66,6 +73,6 @@ Update the reviews service to inject faults:
 kubectl apply -f demo2/reviews-v2-503.yaml
 ```
 
-> Browse to http://bookinfo.local/productpage and check [productpage workload in Grafana](http://grafana.local/d/UbsSZTDik/istio-workload-dashboard?orgId=1&refresh=1m&var-datasource=default&var-namespace=bookinfo&var-workload=productpage-v1&var-qrep=destination&var-srcns=All&var-srcwl=All&var-dstsvc=All)
+> OpenShift Local: http://bookinfo-istio-gateway.apps-crc.testing/productpage and check [productpage workload in Grafana](http://grafana-istio-gateway.apps-crc.testing/d/UbsSZTDik/istio-workload-dashboard?orgId=1&refresh=1m&var-datasource=default&var-namespace=bookinfo&var-workload=productpage-v1&var-qrep=destination&var-srcns=All&var-srcwl=All&var-dstsvc=All)
 
-> And [app graph in Kiali](http://kiali.local/kiali/console/graph/namespaces/?traffic=grpc%2CgrpcRequest%2Chttp%2ChttpRequest%2Ctcp%2CtcpSent&graphType=versionedApp&namespaces=bookinfo&duration=300&refresh=10000&idleNodes=true&layout=kiali-dagre&namespaceLayout=kiali-dagre&edges=trafficDistribution%2CresponseTime%2Crt95%2CtrafficRate)
+> And [app graph in Kiali](http://kiali-istio-gateway.apps-crc.testing/kiali/console/graph/namespaces/?traffic=grpc%2CgrpcRequest%2Chttp%2ChttpRequest%2Ctcp%2CtcpSent&graphType=versionedApp&namespaces=bookinfo&duration=300&refresh=10000&idleNodes=true&layout=kiali-dagre&namespaceLayout=kiali-dagre&edges=trafficDistribution%2CresponseTime%2Crt95%2CtrafficRate)
