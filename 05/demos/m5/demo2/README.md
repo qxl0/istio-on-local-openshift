@@ -48,9 +48,9 @@ oc -n bookinfo get pod fortio -o wide
 
 Run the load test:
 
-```
-oc -n bookinfo exec -it pod/fortio -- \
-  fortio load -c 32 -qps 100 -t 30m \
+```powershell
+oc -n bookinfo exec -it pod/fortio -- `
+  fortio load -c 32 -qps 100 -t 30m `
   http://productpage:9080/productpage
 ```
 
