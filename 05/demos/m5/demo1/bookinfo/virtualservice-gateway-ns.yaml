@@ -1,14 +1,14 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  namespace: bookinfo
   name: bookinfo
+  namespace: istio-gateway
 spec:
   hosts:
   - bookinfo.local
   - bookinfo-istio-gateway.apps-crc.testing
   gateways:
-  - istio-gateway/gateway
+  - gateway
   http:
   - route:
     - destination:

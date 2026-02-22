@@ -1,0 +1,12 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: bookinfo
+  namespace: istio-gateway
+spec:
+  host: bookinfo-istio-gateway.apps-crc.testing
+  to:
+    kind: Service
+    name: ingressgateway
+  port:
+    targetPort: http2
