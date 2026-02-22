@@ -97,14 +97,19 @@ kubectl apply -f demo1/v2/
 
 Use [Fortio](https://fortio.org) to send a few hundred requests to the app:
 
+Create fortio pod:
+```powershell
+oc apply -f .\fortio-pod.yaml
+oc -n bookinfo wait pod/fortio --for=condition=Ready --timeout=120s
+oc -n bookinfo get pod fortio -o wide
+```
+
 _Inject your host IP address into the container_
 
 ```
-docker container run -it `
-  --add-host "bookinfo.local:192.168.2.120" `
-  fortio/fortio `
-  load -c 32 -qps 25 -t 60s http://bookinfo.local/productpage
-```
+oc -n bookinfo exec -it pod/fortio -- `
+  fortio load -c 32 -qps 25 -t 60s `
+  http://productpage:9080/productpage
 
 - Back to Kiali _Graph_
 - Add _Response time_
