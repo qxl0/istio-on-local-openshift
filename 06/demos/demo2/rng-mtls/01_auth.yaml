@@ -1,0 +1,26 @@
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: rng
+spec:
+  mtls:
+    mode: STRICT
+---
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: numbers-api-authz
+  namespace: rng
+spec:
+  selector:
+    matchLabels:
+      app: numbers-api
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals: ["cluster.local/ns/rng/sa/numbers-web"]
+      to:
+        - operation:
+            methods: ["GET"]

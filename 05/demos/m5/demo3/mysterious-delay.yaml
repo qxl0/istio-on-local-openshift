@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: bookinfo
+  name: details-v3
+  labels:
+    app: details
+    version: v3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: details
+      version: v3
+  template:
+    metadata:
+      labels:
+        app: details
+        version: v3
+    spec:
+      serviceAccountName: bookinfo-details
+      containers:
+      - name: app
+        image: docker.io/sixeyed/examples-bookinfo-details-v3:1.18.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9080
+        env:
+        - name: SERVICE_VERSION
+          value: v-slow

@@ -1,0 +1,47 @@
+apiVersion: v1
+items:
+- apiVersion: sailoperator.io/v1
+  kind: Istio
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"sailoperator.io/v1","kind":"Istio","metadata":{"annotations":{},"name":"default"},"spec":{"discoverySelectors":[{"matchLabels":{"istio-discovery":"enabled"}}],"updateStrategy":{"type":"InPlace"},"version":"v1.24-latest"}}
+    creationTimestamp: "2026-01-25T15:53:15Z"
+    generation: 2
+    name: default
+    resourceVersion: "3043348"
+    uid: cc67d561-31da-4f01-8f5b-8a8537f25bf2
+  spec:
+    namespace: istio-system
+    updateStrategy:
+      type: InPlace
+    values:
+      meshConfig:
+        enableTracing: true
+        extensionProviders:
+        - name: otel
+          opentelemetry:
+            port: 4317
+            service: otel-collector.istio-system.svc.cluster.local
+    version: v1.24-latest
+  status:
+    activeRevisionName: default
+    conditions:
+    - lastTransitionTime: "2026-01-25T15:53:16Z"
+      status: "True"
+      type: Reconciled
+    - lastTransitionTime: "2026-01-29T21:00:12Z"
+      status: "True"
+      type: Ready
+    - lastTransitionTime: "2026-02-15T00:23:50Z"
+      status: "True"
+      type: DependenciesHealthy
+    observedGeneration: 2
+    revisions:
+      inUse: 1
+      ready: 1
+      total: 1
+    state: Healthy
+kind: List
+metadata:
+  resourceVersion: ""

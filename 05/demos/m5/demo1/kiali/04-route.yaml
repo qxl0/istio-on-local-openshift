@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: kiali
+  namespace: istio-gateway
+spec:
+  host: kiali-istio-gateway.apps-crc.testing
+  port:
+    targetPort: http2
+  to:
+    kind: Service
+    name: ingressgateway
+    weight: 100
+  wildcardPolicy: None

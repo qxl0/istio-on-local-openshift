@@ -1,0 +1,18 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: jaeger-vs
+  namespace: istio-system
+spec:
+  hosts:
+  - jaeger.local
+  gateways:
+  - istio-ingress/gateway
+  exportTo:
+  - istio-ingress
+  http:
+  - route:
+    - destination:
+        host: tracing
+        port:
+          number: 80

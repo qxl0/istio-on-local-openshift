@@ -1,0 +1,44 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  namespace: istio-system
+  name: ingressgateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*/*.sixeyed.com"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  namespace: bookinfo
+  name: bookinfo
+spec:
+  hosts:
+    - bookinfo.sixeyed.com
+  gateways:
+    - istio-system/ingressgateway
+  exportTo:
+    - istio-system
+  http:
+    - match:
+        - uri:
+            exact: /
+      rewrite: 
+        uri: "/productpage"
+      route:
+        - destination:
+            host: productpage
+            port:
+              number: 9080
+    - route:
+        - destination:
+            host: productpage
+            port:
+              number: 9080

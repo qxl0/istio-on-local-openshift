@@ -1,0 +1,39 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  namespace: rng
+  name: numbers-web
+spec:
+  hosts:
+    - rng.sixeyed.com
+  gateways:
+    - istio-system/ingressgateway
+  exportTo:
+    - istio-system
+  http:
+    - route:
+        - destination:
+            host: numbers-web
+            port:
+              number: 80
+---
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: numbers-web-authz
+  namespace: rng
+spec:
+  selector:
+    matchLabels:
+      app: numbers-web
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              [
+                "cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account",
+              ]
+      to:
+        - operation:
+            methods: ["GET", "POST"]

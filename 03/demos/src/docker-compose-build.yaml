@@ -1,0 +1,10 @@
+services:
+  details-api:
+    image: sixeyed/examples-bookinfo-details-v2:1.18.0
+    build:
+      context: details-api
+
+  productpage:
+    image: sixeyed/examples-bookinfo-productpage-v2:1.18.0
+    build:
+      context: productpage

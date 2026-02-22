@@ -1,0 +1,35 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  namespace: bookinfo
+  name: bookinfo
+spec:
+  hosts:
+    - bookinfo-istio-gateway.apps-crc.testing
+  gateways:
+    - bookinfo-gateway
+  http:
+  - route:
+    - destination:
+        host: productpage
+        subset: v2
+        port:
+          number: 9080
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  namespace: bookinfo
+  name: bookinfo-test
+spec:
+  hosts:
+    - test.bookinfo-istio-gateway.apps-crc.testing
+  gateways:
+    - bookinfo-gateway
+  http:
+  - route:
+    - destination:
+        host: productpage
+        subset: v1
+        port:
+          number: 9080

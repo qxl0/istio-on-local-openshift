@@ -1,0 +1,5 @@
+services:
+  details-api:
+    image: sixeyed/examples-bookinfo-details-v3:1.18.0
+    build:
+      context: details-api

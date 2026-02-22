@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: numbers-web
+  namespace: rng
+  labels:
+    app: numbers-web
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: numbers-web
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: numbers-web
+        version: v1
+        sidecar.istio.io/inject: 'true'
+    spec:
+      serviceAccountName: numbers-web
+      containers:
+      - image: kiamol/ch03-numbers-web
+        name: numbers-web
+        resources:
+          limits:
+            cpu: 250m
+            memory: 200Mi
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+          - name: RngApi__Url
+            value: http://numbers-api.rng/rng

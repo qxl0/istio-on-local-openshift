@@ -1,0 +1,3 @@
+is_global = true
+build_property.RootNamespace = BookInfo.Details
+build_property.ProjectDir = /Users/elton/scm/psod/psod-istio-2023/psod-istio-2023-source/m3/src/details-api/
