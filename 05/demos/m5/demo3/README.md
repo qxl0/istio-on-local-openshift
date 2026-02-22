@@ -48,11 +48,11 @@ But we want to use an explicitly named provider, which lets us configure the tra
 kubectl apply -f demo3/istio-config-zipkin.yaml
 ```
 
-> Browse to http://jaeger.local 
+> OpenShift Local: http://jaeger-istio-gateway.apps-crc.testing
 
 Only Jaeger has traces (it monitors itself).
 
-> Browse to http://bookinfo.local/productpage & refresh a few times (the default sampling rate is 1% so not many requests get stored)
+> OpenShift Local: http://bookinfo-istio-gateway.apps-crc.testing/productpage (refresh a few times - the default sampling rate is 1% so not many requests get stored)
 
 - Select service `productpage.bookinfo`
 - Follow traces - some with details & reviews, some with ratings too
@@ -68,17 +68,15 @@ The telemetry API is for configuring behaviour at different levels (mesh, namesp
 kubectl apply -f demo3/bookinfo-tracing.yaml
 ```
 
-Generate some load:
+Generate some load using Fortio inside the cluster:
 
-```
-docker container run `
-  --add-host "bookinfo.local:192.168.2.120" `
-  fortio/fortio `
-  load -c 32 -qps 100 -t 60s `
-  http://bookinfo.local/productpage
+```powershell
+oc -n bookinfo exec -it pod/fortio -- \
+  fortio load -c 32 -qps 100 -t 60s \
+  http://productpage:9080/productpage
 ```
 
-> Browse to http://jaeger.local 
+> OpenShift Local: http://jaeger-istio-gateway.apps-crc.testing 
 
 ## Track down a bad update
 
@@ -90,11 +88,11 @@ kubectl apply -f demo3/mysterious-delay.yaml | Out-Null
 
 > Check http://bookinfo.local/productpage & refresh
 
-- Back to Jaegar
+- OpenShift Local: http://bookinfo-istio-gateway.apps-crc.testing/productpage (refresh to generate traces)
+
+- Back to Jaegar (http://jaeger-istio-gateway.apps-crc.testing)
 - Follow trace for outlier
 
-Open http://kiali.local & find logs for slow service
-
-An alternative APM (Application Performance Monitor) with Istio integration is [Apache SkyWalking](https://skywalking.apache.org). It has too many features to cover here, but it essentially combines multiple views into one UI.
+- Open Kiali (http://kiali-istio-gateway.apps-crc.testing)lication Performance Monitor) with Istio integration is [Apache SkyWalking](https://skywalking.apache.org). It has too many features to cover here, but it essentially combines multiple views into one UI.
 
 > Check the SkyWalking demo site: http://demo.skywalking.apache.org/ (login: `skywalking` / `skywalking`)

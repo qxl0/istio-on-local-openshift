@@ -6,13 +6,14 @@ metadata:
 spec:
   hosts:
   - jaeger.local
+  - jaeger-istio-gateway.apps-crc.testing
   gateways:
-  - istio-ingress/gateway
+  - istio-gateway/gateway
   exportTo:
-  - istio-ingress
+  - istio-gateway
   http:
   - route:
     - destination:
-        host: tracing
+        host: tracing.istio-system.svc.cluster.local
         port:
           number: 80
