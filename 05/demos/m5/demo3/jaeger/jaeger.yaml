@@ -1,4 +1,6 @@
 #https://raw.githubusercontent.com/istio/istio/release-1.20/samples/addons/jaeger.yaml
+# NOT APPLICABLE TO THIS DEMO, JUST FOR REFERENCE
+# I have already got the Jaeger collector in openshift local 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -120,3 +122,16 @@ spec:
     name: http-otel
   selector:
     app: jaeger
+---
+# Add this to your file to make the UI accessible
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: jaeger-ui
+  namespace: istio-system
+spec:
+  to:
+    kind: Service
+    name: tracing
+  port:
+    targetPort: http-query

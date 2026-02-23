@@ -1,0 +1,25 @@
+apiVersion: sailoperator.io/v1
+kind: Istio
+metadata:
+  name: default
+  namespace: istio-system
+spec:
+  namespace: istio-system
+  version: v1.27.3
+  values:
+    meshConfig:
+      enableTracing: true
+      # Define Jaeger as a provider
+      extensionProviders:
+      - name: jaeger-zipkin
+        zipkin:
+          service: jaeger-collector.openshift-distributed-tracing.svc.cluster.local
+          port: 9411
+      defaultProviders:
+        metrics:
+        - prometheus
+        tracing:
+        - jaeger-zipkin
+      enablePrometheusMerge: true
+      rootNamespace: istio-system
+      trustDomain: cluster.local
