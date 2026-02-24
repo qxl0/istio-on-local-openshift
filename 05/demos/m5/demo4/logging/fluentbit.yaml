@@ -16,24 +16,28 @@ spec:
       containers:
       - name: fluent-bit
         image: fluent/fluent-bit:1.8.3
+        securityContext:
+          privileged: true
+          runAsUser: 0
         volumeMounts:
         - name: fluent-bit-config
           mountPath: /fluent-bit/etc/
-        - name: varlog
-          mountPath: /var/log
-        - name: varlibdockercontainers
-          mountPath: /var/lib/docker/containers
+        - name: varlogcontainers
+          mountPath: /var/log/containers
+          readOnly: true
+        - name: varlogpods
+          mountPath: /var/log/pods
           readOnly: true
       volumes:
       - name: fluent-bit-config
         configMap:
           name: fluent-bit-config
-      - name: varlog
+      - name: varlogcontainers
         hostPath:
-          path: /var/log
-      - name: varlibdockercontainers
+          path: /var/log/containers
+      - name: varlogpods
         hostPath:
-          path: /var/lib/docker/containers
+          path: /var/log/pods
 ---
 apiVersion: v1
 kind: ServiceAccount

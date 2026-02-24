@@ -27,7 +27,7 @@ spec:
         app: elasticsearch
     spec:
       containers:
-      - image: courselabs/elasticsearch:7.10
+      - image: courselabs/elasticsearch:7.11
         name: elasticsearch
         ports:
         - containerPort: 9200

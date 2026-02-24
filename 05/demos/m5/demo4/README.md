@@ -12,62 +12,61 @@ Istio proxies can be configured to emit network access logs. In this demo we'll 
 
 Follow the steps from [Demo 1](../demo1/README.md) to deploy a working instance of Bookinfo with Istio, Prometheus and Kiali configured.
 
-```
-kubectl config set-context --current --namespace=bookinfo
+```powershell
+oc project bookinfo
 ```
 
 Replace the slow details service:
 
-```
-kubectl apply -f demo1/bookinfo/
+```powershell
+oc apply -f .\demo1\bookinfo\
 ```
 
 ## Configure proxy logging
 
 There is already some logging happening:
 
-> Browse to http://bookinfo.local/productpage
+> OpenShift Local: http://bookinfo-istio-gateway.apps-crc.testing/productpage
 
-```
-kubectl logs -l app=productpage -c app
-
-kubectl logs -l app=productpage -c istio-proxy
+```powershell
+oc logs -l app=productpage -c app
+oc logs -l app=productpage -c istio-proxy
 ```
 
 The proxy logs only show changes to Envoy configuration. We can enable access logs with a change to the Istio config:
 
 - [istio-config-accessLog.yaml](istio-config-accessLog.yaml) - turns on access logs for proxy containers, directing them to stdout
 
-```
-kubectl apply -f demo4/istio-config-accessLog.yaml
+```powershell
+oc apply -f .\demo4\istio-config-accessLog.yaml
 ```
 
-> Browse to http://bookinfo.local/productpage
+> OpenShift Local: http://bookinfo-istio-gateway.apps-crc.testing/productpage
 
-```
-kubectl logs -l app=productpage -c istio-proxy
+```powershell
+oc logs -l app=productpage -c istio-proxy
 ```
 
 Now we see access logs in a standard(ish) web server format. We can switch to structured logging with another config change:
 
 - [istio-config-accessLog-json.yaml](istio-config-accessLog-json.yaml) - writes access logs in JSON
 
-```
-kubectl apply -f demo4/istio-config-accessLog-json.yaml
+```powershell
+oc apply -f .\demo4\istio-config-accessLog-json.yaml
 ```
 
-> Browse to http://bookinfo.local/productpage
+> OpenShift Local: http://bookinfo-istio-gateway.apps-crc.testing/productpage
 
 Now the proxy logs are in JSON:
 
-```
-kubectl logs -l app=productpage -c istio-proxy
+```powershell
+oc logs -l app=productpage -c istio-proxy
 ```
 
 For all Istio-managed components:
 
-```
-kubectl logs -l app=details -c istio-proxy
+```powershell
+oc logs -l app=details -c istio-proxy
 ```
 
 ## Deploy EFK logging stack
@@ -82,17 +81,17 @@ We'll use a Fluentbit configuration which separates app logs, proxy logs & syste
 
 - [fluentbit.yaml](./logging/fluentbit-config.yaml)
 
+```powershell
+oc apply -f .\demo4\logging\
+oc adm policy add-scc-to-user privileged -z fluent-bit -n logging
+oc get pods -n logging -w
+oc get svc -n logging
+oc get route -n logging
 ```
-kubectl apply -f demo4/logging/
 
-kubectl get pods -n logging -w
+> OpenShift Local: http://bookinfo-istio-gateway.apps-crc.testing/productpage
 
-kubectl get svc -n logging
-```
-
-> Browse to http://bookinfo.local/productpage
-
-> Browse to Kibana at http://localhost:5601
+> OpenShift Local Kibana: http://kibana-logging.apps-crc.testing
 
 - In _Stack Management_ create index pattern for `proxy*`
 - In _Discover_ browse the logs
@@ -104,11 +103,10 @@ Run Fortio for 30 seconds:
 
 _Use your own host's IP address_
 
-```
-docker container run `
-  --add-host "bookinfo.local:192.168.2.120" `
-  fortio/fortio `
-  load -c 32 -qps 25 -t 30s http://bookinfo.local/productpage
+```powershell
+oc -n bookinfo exec -it pod/fortio -- `
+  fortio load -c 32 -qps 25 -t 30s `
+  http://productpage:9080/productpage
 ```
 
 - Back to Kibana
