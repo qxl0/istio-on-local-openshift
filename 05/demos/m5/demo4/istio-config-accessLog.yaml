@@ -1,25 +1,27 @@
-apiVersion: v1
-kind: ConfigMap
+apiVersion: sailoperator.io/v1
+kind: Istio
 metadata:
+  name: default
   namespace: istio-system
-  name: istio
-data:
-  mesh: |-
-    defaultConfig:
-      discoveryAddress: istiod.istio-system.svc:15012
-    defaultProviders:
-      metrics:
-      - prometheus
-    enableTracing: true
-    extensionProviders:
-      - name: "zipkin"
+spec:
+  namespace: istio-system
+  version: v1.24-latest
+  values:
+    meshConfig:
+      defaultProviders:
+        metrics:
+        - prometheus
+        tracing:
+        - jaeger-zipkin
+      enableTracing: true
+      extensionProviders:
+      - name: jaeger-zipkin
         zipkin:
-          service: "zipkin.istio-system.svc.cluster.local"
+          service: jaeger-collector.openshift-distributed-tracing.svc.cluster.local
           port: 9411
           maxTagLength: 56
-    enablePrometheusMerge: true
-    rootNamespace: istio-system
-    trustDomain: cluster.local
-    accessLogFile: /dev/stdout
-  meshNetworks: |-
-    networks: {}
+      enablePrometheusMerge: true
+      rootNamespace: istio-system
+      trustDomain: cluster.local
+      accessLogFile: /dev/stdout
+      accessLogEncoding: JSON
